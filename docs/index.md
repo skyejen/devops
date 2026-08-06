@@ -4,7 +4,7 @@ template: home.html
 
 # :material-server-network: DevOps
 
-Write-ups from real DevOps and platform work: incidents I diagnosed, automations I built, and systems I rescued or replaced. Each one is documented end to end, from the first symptom to the fix.
+Write-ups from real DevOps and platform work: production incidents I diagnosed and systems I rescued, documented end to end from the first symptom to the fix.
 
 This is the practical, hands-on side of my move into infrastructure and operations.
 

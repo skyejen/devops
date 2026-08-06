@@ -69,8 +69,9 @@ nav:
   - Home: index.md
   - Portfolio:
     - portfolio/index.md
-    - Self-built meeting bot: portfolio/meeting-meerkat.md
-    - Sentry rescue: portfolio/sentry-rescue.md
+    - Case studies:
+      - Sentry rescue: portfolio/sentry-rescue.md
+      - Silent build trigger: portfolio/ugs-trigger.md
 
 # Exclude the sj-theme submodule's own markdown (its README) from the built site.
 # The submodule lives under docs/, but only its extra.css / extra.js are real assets.
