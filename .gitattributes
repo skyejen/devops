@@ -1,0 +1,3 @@
+# Normalise line endings: store LF in the repo, check out native per OS.
+# Fixes the "every file looks modified" (CRLF vs LF) noise on Windows.
+* text=auto
