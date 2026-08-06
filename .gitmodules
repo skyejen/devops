@@ -1,0 +1,3 @@
+[submodule "docs/sj-theme"]
+	path = docs/sj-theme
+	url = https://github.com/skyejen/sj-theme.git

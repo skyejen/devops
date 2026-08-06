@@ -1,0 +1,32 @@
+name: Deploy MkDocs to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install MkDocs Material
+        # mkdocs-material pinned to 9.x: 2.0 rewrote theming and breaks our
+        # overrides with no migration path.
+        # pymdown-extensions pinned to 10.x: keeps CI reproducible and matching
+        # the local dev install; avoids an untested major landing on the live site.
+        run: pip install "mkdocs-material>=9.7,<10" "pymdown-extensions>=10,<11" "mkdocs-redirects>=1.2,<2"
+
+      - name: Deploy
+        run: mkdocs gh-deploy --force

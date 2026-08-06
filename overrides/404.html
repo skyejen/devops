@@ -1,0 +1,19 @@
+{% extends "main.html" %}
+
+{#- Custom themed 404. Renders inside the md-typeset article, so the h1 picks up
+    the normal main-header style (inline icon gets the blue icon-box). -#}
+{% block content %}
+  <h1><span class="twemoji">{% include ".icons/material/radar.svg" %}</span> Page not found</h1>
+
+  <p class="sj-lead">No route to this host.</p>
+
+  <p>Dead link, moved, or it never existed. Nothing suspicious, promise.</p>
+
+  <hr>
+
+  <p>
+    <a class="sj-back" href="{{ config.site_url }}/">
+      <span class="twemoji">{% include ".icons/material/arrow-left.svg" %}</span> Back to home
+    </a>
+  </p>
+{% endblock %}

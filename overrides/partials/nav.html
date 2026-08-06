@@ -1,0 +1,41 @@
+{#-
+  Custom nav: render ONLY the top-level section that contains the current page,
+  so Portfolio and Learning never appear stacked together. No tabs needed.
+  (Home/index.md is never active on a content page, so it never shows.)
+-#}
+{% import "partials/nav-item.html" as item with context %}
+{% set class = "md-nav md-nav--primary" %}
+{% if "toc.integrate" in features %}
+  {% set class = class ~ " md-nav--integrated" %}
+{% endif %}
+<nav class="{{ class }}" aria-label="{{ lang.t('nav') }}" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="{{ config.extra.homepage | d(nav.homepage.url, true) | url }}" title="{{ config.site_name | e }}" class="md-nav__button md-logo" aria-label="{{ config.site_name }}" data-md-component="logo">
+      {% include "partials/logo.html" %}
+    </a>
+    {{ config.site_name }}
+  </label>
+  {% if config.repo_url %}
+    <div class="md-nav__source">
+      {% include "partials/source.html" %}
+    </div>
+  {% endif %}
+  <ul class="md-nav__list" data-md-scrollfix>
+    {% for nav_item in nav.items %}
+      {% if nav_item.active %}
+        {% set path = "__nav_" ~ loop.index %}
+        {#- Render the active section's CHILDREN at level 1, not the section
+            itself. Material tags any level-1 item that has children with
+            `md-nav__item--section` (see partials/nav-item.html), which is what
+            gives us the blue category headers, so this makes TryHackMe and
+            Off the Beat blue instead of the single "Learning" wrapper.
+            The section's own index page is skipped: the breadcrumb links it. -#}
+        {% for child in nav_item.children %}
+          {% if not child.is_index %}
+            {{ item.render(child, path ~ "_" ~ loop.index, 1) }}
+          {% endif %}
+        {% endfor %}
+      {% endif %}
+    {% endfor %}
+  </ul>
+</nav>

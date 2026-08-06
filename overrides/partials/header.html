@@ -1,0 +1,52 @@
+{#- Custom header: static brand title, GitHub + LinkedIn icons -#}
+{% set class = "md-header" %}
+{% if "navigation.tabs.sticky" in features %}
+  {% set class = class ~ " md-header--shadow md-header--lifted" %}
+{% elif "navigation.tabs" not in features %}
+  {% set class = class ~ " md-header--shadow" %}
+{% endif %}
+<header class="{{ class }}" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="{{ lang.t('header') }}">
+    <label class="md-header__button md-icon" for="__drawer">
+      {% set icon = config.theme.icon.menu or "material/menu" %}
+      {% include ".icons/" ~ icon ~ ".svg" %}
+    </label>
+    <div class="sj-brand">
+      <a href="{{ config.extra.homepage | d(nav.homepage.url, true) | url }}" title="{{ config.site_name | e }}" class="md-header__button md-logo" aria-label="{{ config.site_name }}" data-md-component="logo">
+        {% include "partials/logo.html" %}
+      </a>
+      <div class="md-header__title sj-header-title">
+        <div class="md-header__ellipsis">
+          <div class="md-header__topic">
+            <span class="md-ellipsis">
+              <a class="sj-user" href="https://skyejen.github.io" title="skyejen">skyejen</a>
+              <span class="sj-slash">/</span>
+              <a class="sj-repo" href="{{ nav.homepage.url | url }}" title="Home">devops</a>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% if "material/search" in config.plugins %}
+      {% set search = config.plugins["material/search"] | attr("config") %}
+      {% if search.enabled %}
+        <label class="md-header__button md-icon" for="__search">
+          {% set icon = config.theme.icon.search or "material/magnify" %}
+          {% include ".icons/" ~ icon ~ ".svg" %}
+        </label>
+        {% include "partials/search.html" %}
+      {% endif %}
+    {% endif %}
+    <button class="md-header__button md-icon sj-night-toggle" title="Toggle night mode" aria-label="Toggle night mode" type="button">
+      {% include ".icons/material/weather-night.svg" %}
+    </button>
+    {% if config.repo_url %}
+      <div class="md-header__source">
+        {% include "partials/source.html" %}
+      </div>
+    {% endif %}
+    <a class="md-header__button md-icon sj-linkedin" href="https://www.linkedin.com/in/skyejen/" title="LinkedIn" rel="noopener" target="_blank">
+      {% include ".icons/fontawesome/brands/linkedin.svg" %}
+    </a>
+  </nav>
+</header>

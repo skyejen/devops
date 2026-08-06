@@ -1,0 +1,22 @@
+# macOS system files
+.DS_Store
+
+# Windows system files
+Desktop.ini
+Thumbs.db
+
+# IDE settings
+.vscode/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Claude session handoff (manual transfer between machines)
+CLAUDE_HANDOFF.md
+
+# MkDocs build output (generated in CI)
+site/
+
+# Local drafts not ready to publish
+_ready_to_publish/

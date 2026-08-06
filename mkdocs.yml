@@ -1,0 +1,78 @@
+site_name: skyejen / devops
+site_url: https://skyejen.github.io/devops
+site_description: DevOps portfolio and write-ups by Jen
+site_author: skyejen
+
+repo_name: skyejen/devops
+repo_url: https://github.com/skyejen/devops
+
+# Local dev server address (so all sites can run side by side)
+dev_addr: 127.0.0.1:8003
+
+theme:
+  name: material
+  custom_dir: overrides
+  palette:
+    - scheme: slate
+      primary: custom
+      accent: custom
+  font:
+    text: Inter
+    code: JetBrains Mono
+  features:
+    - navigation.sections
+    - navigation.indexes
+    - navigation.top
+    - search.highlight
+    - search.suggest
+    - content.code.copy
+    - toc.follow
+  logo: images/devops-v1.png
+  favicon: images/devops-v1.png
+  icon:
+    repo: fontawesome/brands/github
+
+extra_css:
+  - sj-theme/extra.css
+
+extra_javascript:
+  - sj-theme/extra.js
+
+markdown_extensions:
+  - attr_list
+  - md_in_html
+  - admonition
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.highlight:
+      linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.tilde
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+
+copyright: >-
+  <span class="md-copyright__highlight">© 2026 Jennifer Skye</span>
+  &nbsp;·&nbsp; stay curious. keep building.
+
+extra:
+  generator: false
+
+plugins:
+  - search
+
+nav:
+  - Home: index.md
+  - Portfolio:
+    - portfolio/index.md
+    - Self-built meeting bot: portfolio/meeting-meerkat.md
+    - Sentry rescue: portfolio/sentry-rescue.md
+
+# Exclude the sj-theme submodule's own markdown (its README) from the built site.
+# The submodule lives under docs/, but only its extra.css / extra.js are real assets.
+exclude_docs: |
+  sj-theme/*.md

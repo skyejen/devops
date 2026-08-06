@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+
+{% block extrahead %}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap">
+  <script>
+    /* apply saved night mode before first paint */
+    if (localStorage.getItem("sj-night") === "1") {
+      document.documentElement.classList.add("sj-night");
+    }
+  </script>
+
+  {#- Open Graph / social share preview (rich link cards in Slack, LinkedIn, etc.) -#}
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="{{ config.site_name }}">
+  <meta property="og:title" content="{% if page and page.title and not page.is_homepage %}{{ page.title }} — {{ config.site_name }}{% else %}{{ config.site_name }}{% endif %}">
+  <meta property="og:description" content="{{ config.site_description }}">
+  <meta property="og:image" content="https://skyejen.github.io/devops/images/devops-v1.png">
+  <meta property="og:url" content="{% if page and page.canonical_url %}{{ page.canonical_url }}{% else %}{{ config.site_url }}{% endif %}">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="{% if page and page.title and not page.is_homepage %}{{ page.title }} — {{ config.site_name }}{% else %}{{ config.site_name }}{% endif %}">
+  <meta name="twitter:description" content="{{ config.site_description }}">
+  <meta name="twitter:image" content="https://skyejen.github.io/devops/images/devops-v1.png">
+{% endblock %}
+
+{% block site_nav %}
+  {% if nav %}
+    {% if page.meta and page.meta.hide %}
+      {% set hidden = "hidden" if "navigation" in page.meta.hide %}
+    {% endif %}
+    <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" {{ hidden }}>
+      <div class="md-sidebar__scrollwrap">
+        <div class="md-sidebar__inner">
+          {% include "partials/nav.html" %}
+        </div>
+      </div>
+      <a class="sj-side-card" href="mailto:jennifer.skye@outlook.com" title="Email me">
+        <span class="sj-side-card-logo">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+            <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
+          </svg>
+        </span>
+        <span><strong>Contact me</strong><em>jennifer.skye@outlook.com</em></span>
+      </a>
+    </div>
+    <script>
+      (function () {
+        /* expand learning paths before first paint (no flash) */
+        document.querySelectorAll(".md-sidebar--primary .md-nav__item--section > nav > ul > li.md-nav__item--nested > input.md-nav__toggle")
+          .forEach(function (t) { t.checked = true; });
+        /* remember which sections the user opened (survives navigation) */
+        var KEY = "sj-nav-open";
+        var toggles = document.querySelectorAll(".md-sidebar--primary input.md-nav__toggle");
+        try {
+          JSON.parse(sessionStorage.getItem(KEY) || "[]").forEach(function (id) {
+            var t = document.getElementById(id);
+            if (t) t.checked = true;
+          });
+        } catch (e) {}
+        var persist = function () {
+          var open = [];
+          toggles.forEach(function (t) { if (t.checked && t.id) open.push(t.id); });
+          sessionStorage.setItem(KEY, JSON.stringify(open));
+        };
+        toggles.forEach(function (t) { t.addEventListener("change", persist); });
+        persist();
+      })();
+    </script>
+  {% endif %}
+  {% if "toc.integrate" not in features %}
+    {% if page.meta and page.meta.hide %}
+      {% set hidden = "hidden" if "toc" in page.meta.hide %}
+    {% endif %}
+    <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" {{ hidden }}>
+      <div class="md-sidebar__scrollwrap">
+        <div class="md-sidebar__inner">
+          {% include "partials/toc.html" %}
+        </div>
+      </div>
+    </div>
+  {% endif %}
+{% endblock %}
+
+{% block content %}
+  {% if not page.is_homepage %}
+    {% set parent_title = (page.ancestors | first).title if page.ancestors else "" %}
+    <nav class="sj-crumbs" aria-label="breadcrumb">
+      <a href="{{ nav.homepage.url | url }}">
+        <span class="twemoji">{% include ".icons/material/home-outline.svg" %}</span>
+        Home
+      </a>
+      {% for ancestor in page.ancestors | reverse %}
+        {% set is_dupe = loop.last and (page.title == ancestor.title or page.is_index) %}
+        <span class="sj-crumbs-sep">›</span>
+        {#- Link the crumb to the section's index page (navigation.indexes), or to
+            the ancestor's own URL if it is a page. Plain text when there's no
+            landing page to point at (e.g. the "TryHackMe" grouping). -#}
+        {% set _crumb = namespace(url = none) %}
+        {% if ancestor.is_page %}
+          {% set _crumb.url = ancestor.url %}
+        {% elif ancestor.children %}
+          {% for _child in ancestor.children %}
+            {% if _child.is_index and _crumb.url is none %}{% set _crumb.url = _child.url %}{% endif %}
+          {% endfor %}
+        {% endif %}
+        {% if _crumb.url and not is_dupe %}
+          <a class="sj-crumb" href="{{ _crumb.url | url }}">{{ ancestor.title }}</a>
+        {% else %}
+          <span class="sj-crumb{% if is_dupe %} sj-crumb--current{% endif %}">{{ ancestor.title }}</span>
+        {% endif %}
+      {% endfor %}
+      {% if page.title != parent_title and not page.is_index %}
+        <span class="sj-crumbs-sep">›</span>
+        <span class="sj-crumb sj-crumb--current">{{ page.title }}</span>
+      {% endif %}
+    </nav>
+  {% endif %}
+  {{ super() }}
+{% endblock %}
