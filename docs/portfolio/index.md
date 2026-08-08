@@ -1,6 +1,6 @@
 # :material-server-network: DevOps Portfolio
 
-Case studies from real DevOps and platform work: production incidents, CI/CD, and self-hosted services. Each one is documented end to end, from the first symptom to the fix and what I'd do differently.
+Case studies from real DevOps and platform work (production incidents, CI/CD, and self-hosted services), plus a side project where I run the whole stack myself. Each one is documented end to end, from the first symptom (or first commit) to the fix and what I'd do differently.
 
 ---
 
@@ -18,6 +18,13 @@ Case studies from real DevOps and platform work: production incidents, CI/CD, an
 <span class="sj-card-title">Silent build trigger</span>
 <span class="sj-card-desc" title="Diagnosing a CI build trigger that had failed silently, with no error anywhere.">Diagnosing a CI build trigger that had failed silently, with no error anywhere.</span>
 <span class="sj-card-meta">incident &middot; CI/CD</span>
+</a>
+
+<a class="sj-card" href="living-stars/" markdown="span">
+<span class="sj-card-icon">:material-server-network:</span>
+<span class="sj-card-title">The Living Stars</span>
+<span class="sj-card-desc" title="Hosting, CI/CD, and automated backups for a live app I built as a side project.">Hosting, CI/CD, and automated backups for a live app I built as a side project.</span>
+<span class="sj-card-meta">Cloudflare &middot; Supabase</span>
 </a>
 
 </div>

@@ -72,6 +72,8 @@ nav:
     - Case studies:
       - Sentry rescue: portfolio/sentry-rescue.md
       - Silent build trigger: portfolio/ugs-trigger.md
+    - Side projects:
+      - The Living Stars (Infra): portfolio/living-stars.md
 
 # Exclude the sj-theme submodule's own markdown (its README) from the built site.
 # The submodule lives under docs/, but only its extra.css / extra.js are real assets.
