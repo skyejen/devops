@@ -14,7 +14,31 @@
 {% block site_nav %}
   <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation">
     <div class="md-sidebar__scrollwrap">
-      <div class="md-sidebar__inner"></div>
+      <div class="md-sidebar__inner">
+        <nav class="md-nav md-nav--primary sj-hub-nav" aria-label="{{ lang.t('nav') }}" data-md-level="0">
+          <label class="md-nav__title" for="__drawer">
+            <a href="{{ config.extra.homepage | d(nav.homepage.url, true) | url }}" title="{{ config.site_name | e }}" class="md-nav__button md-logo" aria-label="{{ config.site_name }}" data-md-component="logo">
+              {% include "partials/logo.html" %}
+            </a>
+            <span class="sj-slash">/</span><a class="sj-repo" href="{{ nav.homepage.url | url }}" title="Home">{{ config.site_name.split(' / ') | last }}</a>
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            {% for nav_item in nav.items %}
+              {% if not nav_item.is_index %}
+                {% set ns = namespace(url = nav_item.url) %}
+                {% if not ns.url and nav_item.children %}
+                  {% for c in nav_item.children %}{% if c.is_index %}{% set ns.url = c.url %}{% endif %}{% endfor %}
+                {% endif %}
+                {% if ns.url %}
+                  <li class="md-nav__item">
+                    <a href="{{ ns.url | url }}" class="md-nav__link">{{ nav_item.title }}</a>
+                  </li>
+                {% endif %}
+              {% endif %}
+            {% endfor %}
+          </ul>
+        </nav>
+      </div>
     </div>
     <a class="sj-side-card" href="mailto:jennifer.skye@outlook.com" title="Email me">
       <span class="sj-side-card-logo">

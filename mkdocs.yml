@@ -56,8 +56,7 @@ markdown_extensions:
       emoji_generator: !!python/name:material.extensions.emoji.to_svg
 
 copyright: >-
-  <span class="md-copyright__highlight">© 2026 Jennifer Skye</span>
-  &nbsp;·&nbsp; stay curious. keep building.
+  <span class="md-copyright__highlight">© 2026 Jennifer Skye</span><span class="sj-copy-sep">&nbsp;·&nbsp;</span><span class="sj-copy-tag">stay curious. keep building.</span>
 
 extra:
   generator: false
