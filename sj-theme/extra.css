@@ -1,0 +1,1588 @@
+/* ============================================================
+   skyejen / cybersecurity — mockup theme
+   Palette: bg #111317 · surface #171B20 · border #252B33
+            primary (blue) #1E88FF · accent (gold) #F2C14E
+   Type:    Space Grotesk (headings) · Inter (body) · JetBrains Mono (code)
+   ============================================================ */
+
+/* Space Grotesk is loaded via <link> in overrides/main.html (faster, no flash) */
+
+/* ── Themed tooltips (native `title` moved to `data-sj-tip` by extra.js) ── */
+[data-sj-tip] {
+  position: relative;
+}
+[data-sj-tip]::after {
+  content: attr(data-sj-tip);
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%) translateY(-3px);
+  background: var(--sj-surface);
+  color: #e6cf94;   /* pale gold */
+  border: 1px solid var(--sj-border);
+  border-radius: 6px;
+  padding: 0.22rem 0.5rem;
+  font-family: var(--md-text-font-family, "Inter"), sans-serif;
+  font-size: 0.62rem;
+  font-weight: 400;
+  line-height: 1.3;
+  white-space: nowrap;
+  letter-spacing: 0;
+  text-transform: none;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.14s ease, transform 0.14s ease;
+  z-index: 100;
+}
+[data-sj-tip]::before {
+  content: "";
+  position: absolute;
+  top: calc(100% + 3px);
+  left: 50%;
+  transform: translateX(-50%) translateY(-3px);
+  border: 5px solid transparent;
+  border-bottom-color: var(--sj-border);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.14s ease, transform 0.14s ease;
+  z-index: 100;
+}
+[data-sj-tip]:hover::after,
+[data-sj-tip]:hover::before,
+[data-sj-tip]:focus-visible::after,
+[data-sj-tip]:focus-visible::before {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+/* Touch devices can't truly hover, but a tap leaves :hover "stuck", pinning the
+   tooltip open until you tap elsewhere (e.g. the night toggle). Suppress the
+   hover-triggered tooltip where there's no real hover; keyboard :focus-visible
+   tooltips are unaffected, as is desktop. */
+@media (hover: none) {
+  [data-sj-tip]:hover::after,
+  [data-sj-tip]:hover::before {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-3px);
+  }
+}
+/* upward variant for elements near the bottom of the viewport */
+[data-sj-tip].sj-tip--up::after {
+  top: auto;
+  bottom: calc(100% + 8px);
+}
+[data-sj-tip].sj-tip--up::before {
+  top: auto;
+  bottom: calc(100% + 3px);
+  border-bottom-color: transparent;
+  border-top-color: var(--sj-border);
+}
+/* right-edge elements: keep the tooltip on-screen */
+[data-sj-tip].sj-tip--left::after {
+  left: auto;
+  right: 0;
+  transform: translateY(-3px);
+}
+[data-sj-tip].sj-tip--left::before {
+  left: auto;
+  right: 0.6rem;
+  transform: translateY(-3px);
+}
+[data-sj-tip].sj-tip--left:hover::after,
+[data-sj-tip].sj-tip--left:hover::before {
+  transform: translateY(0);
+}
+/* cursor-following bubble for clipped cards (positioned by JS at the pointer) */
+.sj-cursor-tip {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 400;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.12s ease;
+  max-width: 16rem;
+  background: var(--sj-surface);
+  color: #e6cf94;
+  border: 1px solid var(--sj-border);
+  border-radius: 6px;
+  padding: 0.3rem 0.55rem;
+  font-family: var(--md-text-font-family, "Inter"), sans-serif;
+  font-size: 0.62rem;
+  line-height: 1.4;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
+}
+
+/* subtle back link (matches the one on the Detective Buggy page) */
+.md-typeset .sj-back {
+  font-size: 0.8rem;
+  color: var(--sj-text-dim);
+}
+.md-typeset .sj-back:hover {
+  color: var(--sj-gold);
+}
+/* force-show (copy button "Copied!" feedback) — visible without hover */
+[data-sj-tip].sj-tip--force::after,
+[data-sj-tip].sj-tip--force::before {
+  opacity: 1;
+}
+[data-sj-tip].sj-tip--force.sj-tip--left::after,
+[data-sj-tip].sj-tip--force.sj-tip--left::before {
+  transform: translateY(0);
+}
+/* wrapper that carries the tooltip for code buttons (keeps their icon intact) */
+.sj-tip-wrap {
+  display: inline-flex;
+  align-items: center;
+}
+/* Unify header tooltips: Material sets .md-header__button:hover{opacity:.7},
+   which creates a stacking context on hover and traps the tooltip behind the
+   header line (the same bug .md-source had). Override so night toggle & LinkedIn
+   tooltips sit fully opaque over the line, matching GitHub. */
+.md-header__button:hover {
+  opacity: 1;
+}
+/* Material shows a "Copied to clipboard" snackbar (.md-dialog) at the bottom on
+   copy — we render our own themed feedback on the button, so hide the snackbar. */
+.md-dialog {
+  display: none !important;
+}
+/* Material's own rich tooltip (v9.7 uses .md-tooltip2) — this is what the code
+   copy button and its "Copied to clipboard!" feedback render through. Theme it
+   to match our custom bubbles. */
+.md-tooltip2 {
+  color: #e6cf94;
+}
+.md-tooltip2__inner,
+.md-tooltip2 .md-tooltip2__inner.md-typeset {
+  background: var(--sj-surface);
+  color: #e6cf94;
+  border: 1px solid var(--sj-border);
+  border-radius: 6px;
+  padding: 0.22rem 0.5rem;
+  font-family: var(--md-text-font-family, "Inter"), sans-serif;
+  font-size: 0.62rem;
+  font-weight: 400;
+  line-height: 1.3;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
+}
+/* the little tail/arrow Material draws on the tooltip */
+.md-tooltip2__inner::before {
+  background: var(--sj-surface) !important;
+  border: 1px solid var(--sj-border);
+}
+/* legacy v1 tooltip, themed too just in case */
+.md-tooltip__inner {
+  background: var(--sj-surface);
+  color: #e6cf94;
+  border: 1px solid var(--sj-border);
+  border-radius: 6px;
+}
+
+html {
+  background-color: #080b13; /* prevents light flash before styles apply */
+}
+
+:root {
+  --sj-bg:        #080b13;
+  --sj-bg-deep:   #04060a;
+  --sj-surface:   #141b2b;
+  --sj-border:    #232d40;
+  --sj-blue:      #1e88ff;
+  --sj-gold:      #f2c14e;
+  --sj-text:      #b9c3d2;
+  --sj-text-dim:  #78839a;
+  --sj-heading:   #dee5f0;
+}
+
+/* ── Material colour tokens ── */
+[data-md-color-scheme="slate"] {
+  --md-primary-fg-color:        var(--sj-blue);
+  --md-primary-fg-color--light: var(--sj-blue);
+  --md-primary-fg-color--dark:  #1668c4;
+  --md-accent-fg-color:         var(--sj-gold);
+
+  --md-default-bg-color:        var(--sj-bg);
+  --md-default-bg-color--light: var(--sj-surface);
+  --md-default-bg-color--dark:  var(--sj-bg-deep);
+
+  --md-default-fg-color:        var(--sj-text);
+  --md-default-fg-color--light: var(--sj-text-dim);
+  --md-default-fg-color--lighter: #58616d;
+  --md-default-fg-color--lightest: #2c333c;
+  --md-default-fg-color--dark:  var(--sj-heading);
+
+  --md-typeset-color:           var(--sj-text);
+  --md-typeset-a-color:         var(--sj-blue);
+
+  --md-code-bg-color:           var(--sj-bg-deep);
+  --md-code-fg-color:           #d3dae4;
+  --md-code-hl-color:           #1e88ff26;
+
+  /* Syntax highlighting → mockup palette */
+  --md-code-hl-keyword-color:     var(--sj-gold);
+  --md-code-hl-function-color:    #8ec2ff;
+  --md-code-hl-string-color:      #7ec699;
+  --md-code-hl-comment-color:     #5faa62;
+  --md-code-hl-number-color:      #f2c14e;
+  --md-code-hl-name-color:        #d3dae4;
+  --md-code-hl-operator-color:    #9aa7b6;
+  --md-code-hl-punctuation-color: #9aa7b6;
+  --md-code-hl-constant-color:    #8ec2ff;
+  --md-code-hl-special-color:     #f2c14e;
+  --md-code-hl-variable-color:    #8ec2ff;
+
+  --md-footer-bg-color:         var(--sj-bg-deep);
+  --md-footer-bg-color--dark:   var(--sj-bg-deep);
+}
+
+/* ── Typography ── */
+body,
+.md-typeset {
+  font-feature-settings: "liga" 1, "calt" 1;
+  -webkit-font-smoothing: antialiased;
+}
+
+.md-typeset h1,
+.md-typeset h2,
+.md-typeset h3,
+.md-typeset h4 {
+  font-family: var(--md-text-font-family, "Inter"), sans-serif;
+  color: var(--sj-heading);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+.md-typeset h1 {
+  font-size: 1.7rem;
+  font-weight: 500;
+  margin-bottom: 0.6em;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.35em;
+}
+
+/* Short gold underline accent under h2, like the mockup */
+.md-typeset h2 {
+  font-size: 1.2rem;
+  font-weight: 400;
+  margin-top: 2.2em;
+  padding-bottom: 0.35em;
+  width: fit-content;
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.35em;
+}
+.md-typeset h2::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--sj-gold) 0%, rgba(242, 193, 78, 0.4) 70%, transparent 100%);
+}
+
+.md-typeset h3 {
+  font-size: 1.05rem;
+  font-weight: 500;
+  color: #d8bd7e;   /* pale gold — distinct from body text without competing with h2 */
+}
+.md-typeset h4 {
+  font-weight: 500;
+  color: #d8bd7e;   /* pale gold, same family as h3 */
+}
+.md-typeset h5 {
+  font-weight: 500;
+  color: #cbb277;   /* slightly muted so the h3 → h4 → h5 hierarchy still reads */
+}
+
+/* Heading anchor links */
+.md-typeset .headerlink {
+  color: var(--sj-border);
+}
+.md-typeset .headerlink:hover,
+.md-typeset :target > .headerlink {
+  color: var(--sj-gold);
+}
+
+/* ── Links ── */
+.md-typeset a {
+  color: var(--sj-blue);
+}
+.md-typeset a:hover {
+  color: var(--sj-gold);
+}
+
+/* Emphasis */
+.md-typeset strong {
+  color: var(--sj-heading);
+}
+
+/* ── Header bar ── */
+.md-header {
+  background-color: rgba(12, 15, 20, 0.95);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--sj-border);
+  box-shadow: none;
+  color: var(--sj-heading);
+}
+/* Header bottom line: one uniform full-width line (home + docs) */
+@media screen and (min-width: 76.25em) {
+  .md-header {
+    border-bottom: none;
+  }
+  .md-header::before {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    /* one uniform line across the whole top bar (home + docs) */
+    background: var(--sj-border);
+  }
+  /* Scroll container below the header (LinkedIn-style): the page scrollbar
+     spans content + footer only, never the top bar */
+  html,
+  body {
+    overflow: hidden;
+    height: 100%;
+  }
+  .md-container {
+    height: calc(100vh - 3.2rem - 1px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+  .md-sidebar--primary,
+  .md-sidebar--secondary {
+    top: 0 !important;
+  }
+}
+/* Feather content passing under the header's horizontal line (full width) */
+@media screen and (min-width: 76.25em) {
+  .md-header::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    height: 1rem;
+    background: linear-gradient(to bottom, var(--sj-bg) 5%, transparent);
+    pointer-events: none;
+  }
+}
+
+/* "skyejen / cybersecurity" — static brand title, vertically centred */
+.md-header__inner {
+  align-items: center;
+}
+.sj-header-title {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  margin: 0 0 0 0.1rem !important;
+  line-height: 1;
+  flex: 0 0 auto;
+  width: auto;
+}
+.sj-header-title .md-header__ellipsis {
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+.sj-header-title .md-header__topic {
+  position: static;
+  transform: none;
+  opacity: 1;
+  font-family: "Space Grotesk", sans-serif;
+  font-weight: 600;
+  font-size: 0.72rem;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+}
+.sj-header-title .md-ellipsis {
+  color: var(--sj-heading);
+}
+/* Brand links: skyejen → landing page, cybersecurity → repo home */
+.sj-header-title .sj-user {
+  color: var(--sj-heading);
+  transition: color 0.15s ease;
+}
+.sj-header-title .sj-user:hover {
+  color: var(--sj-gold);
+}
+.sj-header-title .sj-repo:hover {
+  color: var(--sj-blue);
+}
+/* LinkedIn button */
+.sj-linkedin svg {
+  fill: currentColor;
+}
+.sj-linkedin:hover {
+  color: var(--sj-gold);
+}
+
+/* Search box → dark pill */
+.md-search__form {
+  background-color: var(--sj-surface) !important;
+  border: 1px solid var(--sj-border);
+  border-radius: 8px;
+}
+.md-search__form:hover {
+  border-color: #303945;
+}
+[data-md-toggle="search"]:checked ~ .md-header .md-search__form {
+  background-color: var(--sj-surface) !important;
+  border-color: var(--sj-blue);
+  border-radius: 8px 8px 0 0;
+}
+.md-search__input {
+  color: var(--sj-heading);
+}
+.md-search__input::placeholder {
+  color: var(--sj-text-dim);
+}
+.md-search__icon,
+.md-search__icon svg {
+  color: var(--sj-text-dim);
+  fill: var(--sj-text-dim);
+}
+/* Ctrl+K hint in the search bar */
+.sj-kbd {
+  position: absolute;
+  right: 0.6rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.55rem;
+  color: var(--sj-text-dim);
+  border: 1px solid var(--sj-border);
+  border-radius: 5px;
+  padding: 0.05rem 0.35rem;
+  pointer-events: none;
+}
+[data-md-toggle="search"]:checked ~ .md-header .sj-kbd {
+  display: none;
+}
+.md-search__output {
+  border: 1px solid var(--sj-border);
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+}
+.md-search-result mark {
+  color: var(--sj-gold);
+  background-color: transparent;
+}
+.md-search-result__meta {
+  background-color: var(--sj-surface);
+  color: var(--sj-text-dim);
+}
+
+/* Repo link (right side of header) → icon only, like the mockup */
+.md-source {
+  color: var(--sj-heading);
+  overflow: visible;
+  display: flex;
+  align-items: center;
+  height: 2rem;   /* match the night-toggle button box (centered in the 3.2rem
+                     header) so the tooltip lines up with the other two */
+}
+.md-source__repository { overflow: visible; }
+.md-source:hover {
+  color: var(--sj-gold);
+  opacity: 1;   /* Material sets opacity:.7 here, which creates a stacking context
+                   on hover and traps the tooltip behind the feathered content */
+}
+.md-header__source {
+  width: auto;
+  max-width: none;
+  margin-left: 0.6rem;
+}
+.md-source__repository {
+  display: none;
+}
+/* Blue avatar dot */
+.sj-avatar {
+  display: inline-block;
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 50%;
+  background: var(--sj-blue);
+  margin: 0 0.8rem 0 0.5rem;
+  align-self: center;
+  box-shadow: 0 0 6px rgba(30, 136, 255, 0.6);
+}
+
+/* Blue italic lead-ins ("What this section tested:") */
+.md-typeset .sj-lead {
+  color: var(--sj-blue);
+  font-style: italic;
+}
+
+/* ── Left sidebar ── */
+/* Section labels ("TryHackMe") → small caps blue, like the mockup */
+.md-nav--primary > .md-nav__title {
+  background: transparent;
+  box-shadow: none;
+  color: var(--sj-blue);
+}
+/* Hide the site-name title above the nav on desktop (mockup has none) */
+@media screen and (min-width: 76.25em) {
+  .md-nav--primary > .md-nav__title {
+    display: none;
+  }
+}
+.md-nav__item--section > .md-nav__link,
+.md-nav__item--section > label.md-nav__link,
+.md-nav--primary .md-nav__item--section > .md-nav__link .md-ellipsis {
+  color: var(--sj-blue) !important;
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+/* Nav links */
+.md-nav__link {
+  color: var(--sj-text);
+}
+.md-nav__link:hover {
+  color: var(--sj-heading);
+}
+
+/* Page links → row with dot marker: grey normally, gold when active */
+.md-nav--primary a.md-nav__link {
+  display: flex;
+  /* flex-start (not center) so the dot lands on the first line of a title that
+     wraps onto two lines, rather than floating in the gap between them */
+  align-items: flex-start;
+  gap: 0.5em;
+  padding: 0.25em 0.55em;
+  margin: 0.3em 0 0 -0.55em;
+  border-left: 2px solid transparent;
+  border-radius: 0 8px 8px 0;
+}
+.md-nav--primary a.md-nav__link::before {
+  content: "";
+  display: inline-block;
+  width: 12px;
+  /* One line box tall, so the dot centres on the first line. The gradient
+     carries its own 6px radius, so the circle stays round at any box height. */
+  height: 1.4em;
+  height: 1lh;
+  background: radial-gradient(circle 6px at 50% 50%, #48536a 0 28%, transparent 33%) no-repeat;
+  flex-shrink: 0;
+  margin-left: -3px;
+  margin-right: -3px;
+}
+/* No dots on group/section headers */
+.md-nav--primary .md-nav__item--nested > a.md-nav__link::before,
+.md-nav--primary .md-nav__item--section > a.md-nav__link::before {
+  content: none;
+}
+.md-nav--primary .md-nav__item--nested > a.md-nav__link,
+.md-nav--primary .md-nav__item--section > a.md-nav__link {
+  border-left: none;
+  margin-left: 0;
+  padding-left: 0;
+}
+
+/* Active page → solid surface row, gold bar + gold dot, regular weight */
+.md-nav__link--active,
+.md-nav__link--active .md-ellipsis {
+  color: var(--sj-gold) !important;
+  font-weight: 400;
+}
+.md-nav--primary a.md-nav__link--active {
+  background: rgba(20, 27, 43, 0.55);
+  border-radius: 0 2px 2px 0;
+  margin-left: calc(-0.55em - 4px);
+  padding-left: calc(0.55em + 4px);
+}
+.md-nav--primary a.md-nav__link--active::before {
+  width: 12px;
+  height: 1.4em;
+  height: 1lh;
+  margin-left: -3px;
+  margin-right: -3px;
+  transform: translateY(-0.5px);
+  background: radial-gradient(circle 6px at 50% 50%, var(--sj-gold) 0 34%, rgba(242, 193, 78, 0.45) 48%, rgba(242, 193, 78, 0.15) 68%, transparent 88%) no-repeat;
+}
+
+/* Collapsible group titles → regular weight, like the mockup */
+.md-nav__item--nested > .md-nav__link,
+.md-nav__item--nested > label.md-nav__link {
+  color: var(--sj-heading);
+  font-weight: 400;
+}
+
+/* Section-index links (navigation.indexes): plain — no dot, no highlight box,
+   no gold bar. Just the section text turns gold when you're on its page. */
+.md-nav--primary .md-nav__container {
+  align-items: center;              /* vertically centre the collapse chevron with the title */
+}
+.md-nav--primary .md-nav__container > a.md-nav__link {
+  display: block;
+  background: transparent !important;
+  border-left: none !important;
+  border-radius: 0;
+  margin-left: 0;
+  padding-left: 0;
+}
+.md-nav--primary .md-nav__container > a.md-nav__link::before {
+  content: none;
+}
+.md-nav--primary .md-nav__container > a.md-nav__link--active {
+  color: var(--sj-gold) !important;
+  font-weight: 400;
+  background: transparent !important;
+}
+
+/* ── Right sidebar (table of contents) ── */
+.md-nav--secondary .md-nav__title {
+  background: transparent;
+  box-shadow: none;
+  color: var(--sj-blue);
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+/* No-flash label swap: hide original text, render replacement via ::before */
+@media screen and (min-width: 60em) {
+  .md-nav--secondary > .md-nav__title {
+    font-size: 0;
+    letter-spacing: 0;
+  }
+  .md-nav--secondary > .md-nav__title::before {
+    content: "On this page";
+    display: block;
+    font-size: 0.62rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+}
+.md-nav--secondary > .md-nav__list {
+  border-left: 1px solid var(--sj-border);
+  padding-left: 0;
+  margin-left: 8px; /* room for the dot's left half (avoids clipping) */
+}
+.md-nav--secondary .md-nav__link {
+  color: var(--sj-text-dim);
+  position: relative;
+  margin-left: 0;
+}
+.md-nav--secondary .md-nav__link--active,
+.md-nav--secondary .md-nav__link--active .md-ellipsis {
+  color: var(--sj-gold) !important;
+}
+.md-nav--secondary .md-nav__link--active::before {
+  content: "";
+  position: absolute;
+  left: calc(-0.6rem - 7.5px);
+  top: 0.63em;
+  transform: translateY(-50%);
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--sj-gold) 0 38%, rgba(242, 193, 78, 0.45) 52%, rgba(242, 193, 78, 0.15) 72%, transparent 90%);
+}
+/* Nested ToC entries: keep the dot on the outer vertical line */
+.md-nav--secondary .md-nav .md-nav__link--active::before {
+  left: calc(-1.2rem - 7.5px);
+}
+.md-nav--secondary .md-nav .md-nav .md-nav__link--active::before {
+  left: calc(-1.8rem - 7.5px);
+}
+
+/* ── Full-width layout: sidebar flush left, content wide, ToC right ── */
+.md-grid {
+  max-width: none;
+}
+@media screen and (min-width: 76.25em) {
+  .md-sidebar--primary {
+    width: 13.6rem;
+  }
+  /* NAV COLUMN DIVIDER — the big, full-height feathered vertical line at the
+     sidebar's right edge that marks the nav column. Wanted on docs pages;
+     hidden on the landing (see `.sj-home .md-sidebar--primary::after` below). */
+  .md-sidebar--primary::after {
+    content: "";
+    position: absolute;
+    top: -0.6rem;
+    bottom: 0;
+    right: 0;
+    width: 1px;
+    background: linear-gradient(to bottom, var(--sj-border) 0%, var(--sj-border) 82%, transparent 100%);
+    pointer-events: none;
+    z-index: 5;
+  }
+  .md-sidebar--primary .md-sidebar__inner {
+    padding-left: 0.55rem;
+  }
+  .md-content__inner {
+    max-width: 54rem;
+    margin-left: 3rem !important;
+  }
+  .md-sidebar--secondary {
+    margin-right: 2rem;
+  }
+}
+
+/* Brand panel: logo + repo name integrated with the sidebar column */
+.sj-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  height: 100%;
+  padding-left: 0.7rem;
+  flex-shrink: 0;
+  margin-right: auto;
+  overflow: hidden;
+}
+@media screen and (min-width: 76.25em) {
+  .sj-brand {
+    width: 13.6rem;
+    /* BRAND SEPARATOR — a small faint faded line just right of the logo/repo name,
+       the same on every page (home and docs). */
+    border-right: none;
+    position: relative;
+    justify-content: center;
+    padding-left: 0;
+  }
+  .sj-brand::after {
+    content: "";
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 1px;
+    height: 1.3rem;
+    background: linear-gradient(to bottom, transparent, var(--sj-border) 30%, var(--sj-border) 70%, transparent);
+  }
+}
+/* Taller header with breathing room, like the mockup */
+.md-header__inner {
+  height: 3.2rem;
+  padding: 0 0.8rem 0 0;
+}
+.sj-header-title {
+  height: 100%;
+}
+.md-header__button.md-logo {
+  margin: 0;
+  padding: 0.2rem;
+}
+.md-header__button.md-logo img {
+  height: 1.7rem;
+}
+/* Search sits just left of the night-toggle, with a faint divider between them.
+   Spacing mirrors the divider before the social icons: 0.25rem each side of the moon.
+   Tied to the search box so it never shows on search-less pages (the landing). */
+@media screen and (min-width: 76.25em) {
+  .md-search {
+    margin-right: 1.1rem;   /* total search-to-moon spacing */
+  }
+  .md-search__form {
+    position: relative;
+  }
+  .md-search__form::after {
+    content: "";
+    position: absolute;
+    right: -1rem;          /* gap after the search box, before the divider */
+    top: 50%;
+    transform: translateY(-50%);
+    width: 1px;
+    height: 1.3rem;
+    background: linear-gradient(to bottom, transparent, var(--sj-border) 30%, var(--sj-border) 70%, transparent);
+    pointer-events: none;
+  }
+}
+/* Night toggle: gold on hover, faded separator before the social icons */
+.sj-night-toggle:hover {
+  color: var(--sj-gold);
+}
+.sj-night-toggle {
+  margin-right: 0;
+}
+.md-header__source {
+  display: flex;
+  align-items: center;
+  margin-left: 0.25rem !important;
+  overflow: visible;   /* let the tooltip escape (was clipped under the header) */
+}
+/* Header tooltips must render above the content that scrolls beneath the header */
+.md-header [data-sj-tip]::after,
+.md-header [data-sj-tip]::before {
+  z-index: 200;
+}
+.md-header__source::before {
+  content: "";
+  width: 1px;
+  height: 1.3rem;
+  background: linear-gradient(to bottom, transparent, var(--sj-border) 30%, var(--sj-border) 70%, transparent);
+  margin-right: 0.35rem;
+}
+
+/* ── Code ── */
+.md-typeset code {
+  background-color: var(--sj-surface);
+  border: 1px solid var(--sj-border);
+  border-radius: 5px;
+  color: #8ec2ff;
+  font-size: 0.78em;
+  padding: 0.1em 0.4em;
+}
+.md-typeset pre > code {
+  border: none;
+  color: var(--md-code-fg-color);
+}
+.md-typeset pre {
+  background-color: var(--sj-bg-deep);
+  border: 1px solid var(--sj-border);
+  border-radius: 10px;
+}
+/* Line numbers: dim, separated, not interactive-looking */
+.md-typeset .highlighttable .linenos {
+  color: #3d4550;
+  border-right: 1px solid var(--sj-border);
+  user-select: none;
+}
+.md-typeset .highlighttable .linenos pre {
+  border: none;
+  background: transparent;
+}
+.md-typeset .highlighttable {
+  border: 1px solid var(--sj-border);
+  border-radius: 10px;
+  overflow: hidden;
+}
+.md-typeset .highlighttable pre {
+  border: none;
+  border-radius: 0;
+}
+.md-typeset .highlight span.filename {
+  background-color: var(--sj-surface);
+  border: 1px solid var(--sj-border);
+  border-bottom: none;
+  border-radius: 10px 10px 0 0;
+  color: var(--sj-text-dim);
+  font-size: 0.7rem;
+}
+
+/* ── Tables ── */
+.md-typeset table:not([class]) {
+  background-color: var(--sj-surface);
+  border: 1px solid var(--sj-border);
+  border-radius: 10px;
+  overflow: hidden;
+}
+.md-typeset table:not([class]) th {
+  background-color: var(--sj-bg-deep);
+  color: var(--sj-gold);
+  font-family: "Space Grotesk", sans-serif;
+}
+.md-typeset table:not([class]) td {
+  border-top: 1px solid var(--sj-border);
+}
+
+/* ── Horizontal rules → faded gradient, like the mockup ── */
+.md-typeset hr {
+  border: none;
+  height: 2px;
+  background: linear-gradient(90deg, var(--sj-gold) 0%, rgba(242, 193, 78, 0.6) 22%, #3a4759 46%, #3a4759 78%, transparent 100%);
+  opacity: 1;
+  margin: 2.2em 0;
+}
+
+/* ── Admonitions → rounded bordered cards ── */
+.md-typeset .admonition,
+.md-typeset details {
+  background-color: var(--sj-surface);
+  border: 1px solid var(--sj-border);
+  border-radius: 12px;
+  box-shadow: none;
+  font-size: 0.72rem;
+}
+.md-typeset .admonition-title,
+.md-typeset summary {
+  background-color: transparent !important;
+  font-family: "Space Grotesk", sans-serif;
+}
+.md-typeset .admonition.info,
+.md-typeset .admonition.note,
+.md-typeset .admonition.tip {
+  border-color: rgba(30, 136, 255, 0.4);
+}
+.md-typeset .admonition.warning {
+  border-color: rgba(242, 193, 78, 0.4);
+}
+
+/* ── "Quick links" style card (blue outline, like the mockup) ── */
+.md-typeset .admonition.quicklinks {
+  border: 1px solid rgba(30, 136, 255, 0.55);
+  background-color: transparent;
+}
+.md-typeset .quicklinks > .admonition-title {
+  color: var(--sj-blue);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-size: 0.62rem;
+}
+.md-typeset .quicklinks > .admonition-title::before {
+  background-color: var(--sj-blue);
+}
+
+/* ── Homepage hero + card grid ── */
+.sj-hero {
+  text-align: left;
+  padding: 1.2rem 0 0.5rem;
+}
+.sj-hero p.sj-tagline {
+  color: var(--sj-text);
+  font-size: 0.85rem;
+  max-width: 38rem;
+}
+
+.sj-cards {
+  display: grid;
+  /* min 270px guarantees roomy tiles (text fits in 2 lines); tiles wrap to
+     fewer-per-row on narrow panes rather than squeezing + truncating */
+  grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+  gap: 1rem;
+  margin: 1.5rem 0;
+  align-items: stretch;
+}
+.sj-card {
+  display: flex;
+  flex-direction: column;
+  background: var(--sj-surface);
+  border: 1px solid var(--sj-border);
+  border-radius: 14px;
+  padding: 1.1rem 1.25rem;
+  /* height defined by content — every tile has identical (reserved) content
+     so they stay equal height while staying compact (wide-and-short) */
+  color: var(--sj-text) !important;
+  transition: border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+}
+.sj-card:hover {
+  border-color: var(--sj-blue);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  color: var(--sj-text) !important;
+}
+.sj-card .sj-card-icon {
+  font-size: 1.3rem;
+  display: block;
+  margin-bottom: 0.45rem;
+  color: var(--sj-gold);
+}
+.sj-card .sj-card-icon .twemoji svg {
+  width: 1.15rem;
+  height: 1.15rem;
+}
+.sj-card .sj-card-title {
+  font-family: "Space Grotesk", sans-serif;
+  font-weight: 700;
+  color: var(--sj-heading);
+  font-size: 0.85rem;
+  line-height: 1.25;
+  margin-bottom: 0.4rem;
+  /* one line; longer titles get an ellipsis + full text on hover (extra.js adds the tooltip) */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.sj-card:hover .sj-card-title {
+  color: var(--sj-gold);
+}
+.sj-card .sj-card-desc {
+  font-size: 0.68rem;
+  color: var(--sj-text-dim);
+  line-height: 1.5;
+  /* always exactly two lines; ellipsis on overflow (full text on hover via title=) */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-height: 3em;   /* 2 lines x 1.5 line-height — always reserve two lines */
+  margin-bottom: 0.7rem;
+}
+.sj-card .sj-card-meta {
+  align-self: flex-start;            /* forced onto its own line */
+  white-space: nowrap;               /* keep the pill on ONE line (no mid-word breaks) */
+  margin-top: auto;                  /* keeps chips bottom-aligned if content ever varies */
+  display: inline-flex;
+  align-items: center;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.6rem;
+  color: var(--sj-blue);
+  background: rgba(30, 136, 255, 0.08);
+  border: 1px solid rgba(30, 136, 255, 0.25);
+  border-radius: 999px;
+  padding: 0.18rem 0.6rem;
+}
+.sj-card .sj-card-meta .sj-dot {
+  margin: 0 0.35em;
+  transform: translateY(0.1em);      /* lower the middle dot to the text centre */
+  display: inline-block;
+  color: rgba(30, 136, 255, 0.55);
+}
+
+/* ── Footer ── */
+.md-footer {
+  border-top: 1px solid var(--sj-border);
+}
+.md-footer-meta {
+  background-color: var(--sj-bg-deep);
+}
+.md-footer-meta__inner {
+  justify-content: center;
+  padding: 0.9rem 0.8rem;
+}
+.md-copyright {
+  color: var(--sj-text-dim);
+  font-size: 0.6rem;
+  font-family: "JetBrains Mono", monospace;
+  width: auto;
+  margin: 0;
+}
+.md-copyright__highlight {
+  color: var(--sj-text);
+}
+
+/* ── Misc polish ── */
+::selection {
+  background: rgba(242, 193, 78, 0.25);
+}
+.md-top {
+  display: none; /* replaced by custom floating button */
+}
+/* Floating back-to-top button */
+.sj-top {
+  position: fixed;
+  right: 1.9rem;
+  bottom: 1.2rem;
+  z-index: 20;
+  width: 2.1rem;
+  height: 2.1rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--sj-surface);
+  border: 1px solid var(--sj-border);
+  color: var(--sj-text);
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease, border-color 0.15s ease, color 0.15s ease;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+}
+.sj-top--visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+.sj-top:hover {
+  border-color: var(--sj-gold);
+  color: var(--sj-gold);
+}
+.sj-top svg {
+  width: 1rem;
+  height: 1rem;
+  stroke: currentColor;
+}
+
+/* ── Breadcrumbs ── */
+.sj-crumbs {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.62rem;
+  color: var(--sj-text-dim);
+  margin-bottom: 1.2rem;
+}
+.sj-crumbs a {
+  color: var(--sj-blue);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+.sj-crumbs a:hover { color: var(--sj-gold); }
+.sj-crumbs a svg { width: 0.75rem; height: 0.75rem; fill: currentColor; }
+.sj-crumbs-sep { color: var(--sj-text-dim); opacity: 0.6; }
+.sj-crumb--current { color: var(--sj-blue); }
+
+/* ── Write-up metadata block (Path / Date / Difficulty) ── */
+.sj-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin: 1rem 0 1.2rem;
+  font-size: 0.72rem;
+}
+.sj-meta p { margin: 0; }
+.sj-meta .twemoji {
+  color: var(--sj-gold);
+  margin-right: 0.35em;
+  vertical-align: -0.15em;
+}
+.sj-meta strong { color: var(--sj-gold); font-weight: 600; }
+
+/* ── Icon chip on page h1 (the "#" square in the mockup) ── */
+.md-typeset h1 .twemoji {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.35em;
+  height: 1.35em;
+  background: rgba(30, 136, 255, 0.14);
+  border: 1px solid rgba(30, 136, 255, 0.45);
+  border-radius: 10px;
+  color: var(--sj-blue);
+  padding: 0;
+  margin-right: 0.35em;
+  vertical-align: -0.22em;
+}
+.md-typeset h1 .twemoji svg { width: 0.8em; height: 0.8em; }
+
+/* Section heading icons → blue, slightly raised */
+.md-typeset h2 .twemoji {
+  color: var(--sj-blue);
+  margin-right: 0.3em;
+  vertical-align: -0.12em;
+}
+
+/* ── Sidebar: full height, card pinned at the bottom ── */
+@media screen and (min-width: 76.25em) {
+  .md-sidebar--primary {
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 3.9rem) !important;
+    padding: 0 !important;
+  }
+  .md-sidebar--primary .md-sidebar__scrollwrap {
+    flex: 1 1 auto;
+    min-height: 0;
+    height: auto !important;
+    max-height: none !important;
+    /* feathered edges via mask — no overlay needed */
+    mask-image: linear-gradient(to bottom, transparent 0, #000 0.55rem, #000 calc(100% - 1.5rem), transparent 100%);
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 0.55rem, #000 calc(100% - 1.5rem), transparent 100%);
+  }
+  .sj-side-card {
+    margin-top: auto;
+  }
+}
+/* Only scroll the pane under the cursor — no scroll chaining */
+.md-sidebar__scrollwrap {
+  overscroll-behavior: contain;
+}
+/* Breathing room so the feathered edges don't cover content at rest */
+.md-sidebar--primary .md-sidebar__inner {
+  padding-top: 0.35rem;
+  padding-bottom: 1rem;
+}
+/* No pre-sticky gap: keeps sidebars stable AND the vertical line continuous */
+.md-main__inner {
+  margin-top: 0;
+}
+.md-content__inner {
+  padding-top: 0.75rem;
+}
+/* breathing room between the last content and the footer */
+.md-content__inner {
+  padding-bottom: 3rem;
+}
+/* (ToC scrollbar visible again — matches the nav sidebar, triangles and all) */
+.sj-side-card {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 0 0 auto;
+  /* aligned with the nav content: "C" of the group titles to the chevrons */
+  margin: auto 2.3rem 0.8rem 1.36rem;
+  padding: 0.6rem 0.65rem;
+  background: var(--sj-surface);
+  border: 1px solid var(--sj-border);
+  border-radius: 12px;
+  position: relative;
+  color: inherit;
+  transition: border-color 0.15s ease;
+}
+.sj-side-card:hover {
+  border-color: rgba(242, 193, 78, 0.6);
+}
+.sj-side-card:hover em {
+  color: var(--sj-gold);
+}
+/* Hide the card on mobile (drawer nav) */
+@media screen and (max-width: 76.234em) {
+  .sj-side-card {
+    display: none;
+  }
+}
+/* (edge feathering handled by the scrollwrap mask) */
+.sj-side-card-logo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  flex-shrink: 0;
+  border-radius: 50%;
+  color: var(--sj-gold);
+  border: 1px solid rgba(242, 193, 78, 0.5);
+  box-shadow: 0 0 8px rgba(30, 136, 255, 0.25);
+}
+.sj-side-card-logo svg {
+  width: 13px;
+  height: 13px;
+}
+.sj-side-card strong {
+  display: block;
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 0.62rem;
+  color: var(--sj-heading);
+}
+.sj-side-card em {
+  display: block;
+  font-style: normal;
+  font-size: 0.5rem;
+  color: var(--sj-text-dim);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.sj-side-card > span:last-child {
+  min-width: 0;
+}
+
+/* ── Header title parts ── */
+.md-header__topic .sj-slash { color: var(--sj-text-dim); font-weight: 400; }
+.md-header__topic .sj-repo { color: var(--sj-gold); }
+
+/* ── Quick links card when moved into the right sidebar ── */
+.md-sidebar--secondary .admonition.quicklinks {
+  margin: 1.2rem 0.8rem 0 0.2rem;
+  font-size: 0.62rem;
+}
+.md-sidebar--secondary .quicklinks .admonition-title::before { display: none; }
+.md-sidebar--secondary .quicklinks .admonition-title { padding-left: 0.9em; padding-bottom: 0.1em; }
+.md-sidebar--secondary .quicklinks ul { list-style: none; margin: 0.15em 0.5em 0.55em 0.9em; padding: 0; }
+.md-sidebar--secondary .quicklinks li { margin: 0.4em 0; }
+.md-sidebar--secondary .quicklinks .twemoji { margin-left: 0; }
+.md-sidebar--secondary .quicklinks a { color: var(--sj-text); }
+.md-sidebar--secondary .quicklinks a:hover { color: var(--sj-gold); }
+.md-sidebar--secondary .quicklinks .twemoji { margin-right: 0.4em; color: var(--sj-text-dim); }
+
+/* Hide quicklinks in content on desktop until JS moves it (prevents flash) */
+@media screen and (min-width: 76.25em) {
+  .md-content .admonition.quicklinks {
+    display: none;
+  }
+}
+
+/* quicklinks sidebar wrapper */
+.sj-ql-wrap { font-size: 0.62rem; }
+.sj-ql-wrap .admonition.quicklinks { margin: 1.2rem 0.2rem 0; }
+.sj-ql-wrap .quicklinks .twemoji svg { width: 0.85rem; height: 0.85rem; }
+
+/* ── Global body font enforcement ── */
+body {
+  font-family: var(--md-text-font-family), "Inter", -apple-system, sans-serif;
+}
+
+/* Earlier ToC activation when clicking/scrolling to a section */
+.md-typeset h1,
+.md-typeset h2,
+.md-typeset h3 {
+  scroll-margin-top: 3.6rem;
+}
+
+/* ── Night mode: emulates Windows Night Light at ~55% strength
+      (≈3400K → R×1.0 G×0.76 B×0.50, per the 0%=6500K…100%=1200K linear scale) ── */
+/* iOS-safe: a fixed full-viewport multiply overlay reproduces the exact channel
+   transform (R×1 G×0.76 B×0.50). iOS Safari ignores inline-SVG url() filters, but
+   supports mix-blend-mode: multiply, so night mode now works on iPhone/iPad too. */
+html.sj-night body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: rgb(255, 194, 128);
+  mix-blend-mode: multiply;
+  pointer-events: none;
+  z-index: 9999;
+}
+.sj-night-toggle svg {
+  fill: currentColor;
+}
+html.sj-night .sj-night-toggle {
+  color: var(--sj-gold);
+}
+
+/* ── Page scrollbar: proper width, visible track, arrow buttons ──
+   (root-scoped: the sidebars keep Material's own thin scrollbars) */
+.md-container::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+.md-container::-webkit-scrollbar-track {
+  background: var(--sj-bg-deep);
+}
+.md-container::-webkit-scrollbar-thumb {
+  background: #333d4a;
+  border-radius: 6px;
+  border: 3px solid var(--sj-bg-deep);
+}
+.md-container::-webkit-scrollbar-thumb:hover {
+  background: var(--sj-gold);
+}
+.md-container::-webkit-scrollbar-button:single-button {
+  display: block;
+  height: 12px;
+  width: 12px;
+  background-color: var(--sj-bg-deep);
+  background-repeat: no-repeat;
+  background-position: center;
+}
+.md-container::-webkit-scrollbar-button:single-button:vertical:decrement {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='8' height='8'><path d='M4 1.5 L7.2 6.5 L0.8 6.5 Z' fill='%2378839a'/></svg>");
+}
+.md-container::-webkit-scrollbar-button:single-button:vertical:increment {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='8' height='8'><path d='M4 6.5 L7.2 1.5 L0.8 1.5 Z' fill='%2378839a'/></svg>");
+}
+/* Sidebar scrollbars: keep Material's, just make hover gold */
+.md-sidebar__scrollwrap::-webkit-scrollbar-thumb:hover {
+  background: var(--sj-gold);
+}
+
+/* ── Respect per-page `hide: [navigation, toc]` (landing doors page) ──
+   The desktop `.md-sidebar--primary { display: flex }` rules above otherwise
+   override the [hidden] attribute the theme sets from page meta. */
+.md-sidebar--primary[hidden],
+.md-sidebar--secondary[hidden] {
+  display: none !important;
+}
+
+/* ── Landing (design #1): the header bottom-line and brand separator are now
+   unified in the base rules above (same on home and docs). The only header rule
+   still specific to the landing is hiding the big nav-column divider, since the
+   landing has no nav tree. */
+@media screen and (min-width: 76.25em) {
+  .sj-home .md-sidebar--primary::after {
+    display: none !important;
+  }
+}
+
+/* ── Compact "index" tiles: the SAME card as everywhere else, just a NARROWER
+   grid so the title-only learning-path tiles pack more per row. Inner spacing and
+   height stay default — so every tile is the SAME size and titles always get their
+   two reserved lines. Scoped to .sj-ca
+
+@media screen and (min-width: 76.25em) {
+  /* Hide the ToC scrollbar: kills the load-time flash and the permanent bar
+     Material's styled scrollbar leaves behind. Unlike the landing page we keep
+     the pane scrollable, because these ToCs can be long. */
+  .md-sidebar--secondary .md-sidebar__scrollwrap {
+    scrollbar-width: none;
+  }
+  .md-sidebar--secondary .md-sidebar__scrollwrap::-webkit-scrollbar {
+    display: none;
+  }
+}
+/* ── CTA button row (reusable) ──────────────────────────────────────────────
+   A flex row of call-to-action buttons. Used on project pages (e.g. Detective
+   Buggy on the landing repo); available to any repo. ── */
+.sj-cta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin: 1.2rem 0 1.4rem;
+}
+
+/* ── Mobile: keep the header inside the viewport ──────────────────────────────
+   The brand + header icons were wider than a phone screen (worst on the long
+   names: cybersecurity, generalist-tech), causing sideways scroll and a clipped
+   LinkedIn icon. Shorten the "skyejen" back-link to "sj" on phones to reclaim the
+   width; keep the title shrinkable and clip any residual overflow. Phone-only,
+   desktop untouched. */
+@media screen and (max-width: 30em) {
+  /* "skyejen" → "sj" on phones. .sj-user already owns its ::after/::before for the
+     hover tooltip (data-sj-tip), so we fully neutralise that tooltip styling and
+     repurpose ::after as a plain inline "sj" label (tooltips are off on touch anyway).
+     The <a> still links to the landing page. */
+  .sj-header-title:has(.sj-repo) .sj-user { font-size: 0; }
+  .sj-header-title:has(.sj-repo) .sj-user::after {
+    content: "sj";
+    font-size: 0.78rem;
+    position: static;
+    opacity: 1;
+    transform: none;
+    background: none;
+    border: 0;
+    box-shadow: none;
+    padding: 0;
+    color: inherit;
+    white-space: nowrap;
+    pointer-events: auto;   /* tooltip base sets none; re-enable so the "sj" link is tappable */
+  }
+
+  .sj-header-title { flex: 0 1 auto; min-width: 0; }
+  .sj-header-title .md-header__ellipsis { min-width: 0; overflow: hidden; }
+  .sj-header-title .md-header__topic { min-width: 0; overflow: hidden; font-size: 0.78rem; }
+
+  /* Pull the brand toward the burger — SUB-SITES ONLY. The landing has no burger, so
+     leave its roomier (prod-like) left spacing alone. */
+  body:has(.sj-repo) .sj-brand { padding-left: 0.15rem; }
+
+  /* Vertical divider between the search icon and the night toggle. The desktop
+     divider lives on .md-search__form, which is collapsed to an icon on mobile,
+     so add it to the search button here. */
+  .md-header__button[for="__search"] { position: relative; margin-right: 0.35rem; }
+  .md-header__button[for="__search"]::after {
+    content: "";
+    position: absolute;
+    right: -0.25rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 1px;
+    height: 1.3rem;
+    background: linear-gradient(to bottom, transparent, var(--sj-border) 30%, var(--sj-border) 70%, transparent);
+    pointer-events: none;
+  }
+
+  /* Tighten the right-side icons, shrink the glyphs a touch (scaled in place so they
+     stay centred — no reflow/misalignment), and sit them flush to the edge, so they
+     don't crowd the slightly larger brand. */
+  .md-header__inner { padding-right: 0.2rem; }
+  .md-header__button { padding-left: 0.22rem; padding-right: 0.22rem; }
+  .md-header .md-icon svg,
+  .md-header .md-source svg { transform: scale(0.86); }
+  .md-header__source::before { margin-right: 0.22rem; }
+  .md-header__source { margin-left: 0.12rem !important; }
+
+  /* Breadcrumbs wrap awkwardly on phones — hide them. */
+  .sj-crumbs { display: none; }
+
+  /* Footer: stack + centre, tagline on its own line (matches the landing). Relies on
+     the sj-copy-sep / sj-copy-tag spans in each site's copyright config. */
+  .md-footer-meta__inner { flex-direction: column; text-align: center; }
+  .md-footer-meta { padding-top: 0.4rem; padding-bottom: 0.8rem; }
+  .md-footer-copyright { width: 100%; text-align: center; }
+  .sj-copy-sep { display: none; }
+  .sj-copy-tag { display: block; }
+
+  /* Open search must fill the screen. Material's .md-search__inner was collapsing to
+     just the form height (~64px), so results were clipped and the full-screen dark
+     overlay showed instead. Force full height when search is open. */
+  [data-md-toggle="search"]:checked ~ .md-header .md-search__inner {
+    height: 100vh;
+    height: 100dvh;
+  }
+
+  body { overflow-x: clip; }
+}
+
+/* ── Mobile nav drawer (burger): match the theme ────────────────────────────────
+   Material's default drawer chrome clashes with the theme (bright-blue header,
+   stacked logo/name, a stray GitHub icon). Style it to match. Mobile/tablet only
+   (< 76.25em); the desktop sidebar is untouched. */
+@media screen and (max-width: 76.234em) {
+  /* Top-level drawer header: dark bar, logo + name inline and centred (was blue + stacked). */
+  .md-nav--primary > .md-nav__title {
+    background: var(--sj-bg-deep) !important;
+    color: var(--sj-heading) !important;
+    box-shadow: none !important;
+    border-bottom: 1px solid var(--sj-border);
+    height: auto;
+    line-height: 1.2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    padding: 0.85rem 1rem;
+    font-family: "Space Grotesk", sans-serif;
+    font-weight: 600;
+    font-size: 0.8rem;
+    white-space: nowrap;
+  }
+  /* Material absolutely-positions the drawer logo (→ the overlap); flow it inline. */
+  .md-nav--primary > .md-nav__title .md-nav__button.md-logo {
+    position: static !important;
+    display: inline-flex;
+    margin: 0;
+    padding: 0;
+    width: auto;
+    height: auto;
+  }
+  .md-nav--primary > .md-nav__title .md-nav__button.md-logo :is(img, svg) {
+    width: 1.6rem;
+    height: 1.6rem;
+  }
+
+  /* Sub-panel header bar (e.g. "← Home Labs") — dark, not Material's grey. */
+  .md-nav--primary .md-nav .md-nav__title {
+    background: var(--sj-bg-deep) !important;
+    color: var(--sj-heading) !important;
+    box-shadow: none !important;
+    border-bottom: 1px solid var(--sj-border);
+    font-family: "Space Grotesk", sans-serif;
+    font-weight: 600;
+  }
+  /* Sub-panel body: theme background (Material paints a lighter grey). */
+  .md-nav--primary .md-nav { background: var(--sj-bg); }
+
+  /* GitHub already lives in the top header — drop it from the drawer. */
+  .md-nav__source { display: none; }
+
+  /* Drawer brand: "/" white + repo gold (needs the sj-slash/sj-repo spans in each
+     site's nav.html — same treatment as the header). */
+  .md-nav--primary > .md-nav__title .sj-slash { color: var(--sj-heading); margin: 0 0.15rem; }
+  .md-nav--primary > .md-nav__title .sj-repo { color: var(--sj-gold); }
+
+  /* Sub-panel back arrow → gold. */
+  .md-nav--primary .md-nav__title .md-nav__icon { color: var(--sj-gold) !important; }
+
+  /* Kill the leading dot on drawer links (a desktop affordance; reads as "dead" here). */
+  .md-nav--primary a.md-nav__link::before { content: none !important; }
+
+  /* Table of contents in the drawer: drop the outline + dots, keep gold-on-active. */
+  .md-nav--secondary > .md-nav__list { border-left: none; margin-left: 0; }
+  .md-nav--secondary .md-nav__link--active::before { content: none !important; }
+
+  /* Drawer links: dots are killed above — remove the space they reserved (flush left). */
+  .md-nav--primary a.md-nav__link { gap: 0; margin-left: 0; padding-left: 0.5em; }
+  .md-nav--primary a.md-nav__link--active { margin-left: 0; padding-left: 0.5em; }
+
+  /* No separator lines between ANY drawer items (hub/section links AND the ToC). */
+  .md-nav--primary .md-nav__item,
+  .md-nav--primary .md-nav__link,
+  .md-nav--secondary .md-nav__item,
+  .md-nav--secondary .md-nav__link {
+    border-top: none !important;
+    border-bottom: none !important;
+    box-shadow: none !important;
+  }
+  /* ToC title bar: match the sub-panels (dark, back arrow) — no stray padding that
+     shoved the text over the arrow, and no dead gap before the first item. */
+  .md-nav--secondary > .md-nav__title {
+    background: var(--sj-bg-deep) !important;
+    border-bottom: 1px solid var(--sj-border);
+    box-shadow: none !important;
+    margin: 0;
+  }
+  .md-nav--secondary > .md-nav__list { margin-top: 0; }
+}
+/* Hub drawer nav exists only for the mobile burger — never show it in the desktop sidebar. */
+@media screen and (min-width: 76.25em) {
+  .sj-hub-nav { display: none; }
+}
